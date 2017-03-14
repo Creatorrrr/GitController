@@ -29,7 +29,7 @@ public interface GitController {
 	// Merge status
 	public boolean mergeBranch(String from, String to);
 	
-	// Add specified file to ".gitignore" list
+	// Add specified file to '.gitignore' list
 	public boolean addIgnore(String fileDir);
 	
 	// Get difference of changed file
