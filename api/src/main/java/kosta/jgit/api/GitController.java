@@ -10,7 +10,7 @@ public interface GitController {
 	
 	// Clone existing repository
 	public boolean cloneRepository(String uri);
-
+ 
 	// Set remote repository
 	public boolean setRemoteRepository(String uri);
 	
