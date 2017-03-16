@@ -1,24 +1,24 @@
 package kosta.jgit.api;
 
-public interface GitController {
+public interface GitStore {
 	
 	// Initialize git to targeted directory
 	public void initGit(String dir);
 	
 	// Set config
-	public boolean setConfig(String key, String info);
+	public void setLocalConfig(String section, String subSection, String name, String value);
 	
 	// Clone existing repository
-	public boolean cloneRepository(String uri);
+	public void cloneRepository(String uri, String dir);
 
 	// Set remote repository
 	public boolean setRemoteRepository(String uri);
 	
 	// Stage file for commit it to Repository
-	public boolean addFile(String file);
+	public void addFile(String file);
 	
 	// Commit staged files
-	public boolean commitFile();
+	public void commitFile(String message);
 	
 	// Add branch
 	public boolean addBranch(String branch);

@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GitControllerLogicTest {
-	private GitControllerLogic gitCtrl;
+public class GitStoreLogicTest {
+	private GitStoreLogic gitCtrl;
 	
 	@Before
 	public void setGit() {
-		gitCtrl = new GitControllerLogic("C:/Users/kosta");
+		gitCtrl = new GitStoreLogic("C:/Users/Creator");
 	}
 	
 //	@Test
@@ -19,8 +19,9 @@ public class GitControllerLogicTest {
 //	}
 //
 //	@Test
-//	public void testSetConfig() {
-//		fail("Not yet implemented");
+//	public void testSetLocalConfig() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.setConfig("user", null, "name", "cre");
 //	}
 //
 //	@Test
@@ -33,15 +34,16 @@ public class GitControllerLogicTest {
 //		fail("Not yet implemented");
 //	}
 //
-	@Test
-	public void testAddFile() {
-		gitCtrl.initGit("GitTest");
-		gitCtrl.addFile("ddd.txt");
-	}
+//	@Test
+//	public void testAddFile() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.addFile("asdf.txt");
+//	}
 //
 //	@Test
 //	public void testCommitFile() {
-//		fail("Not yet implemented");
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.commitFile("test message");
 //	}
 //
 //	@Test
