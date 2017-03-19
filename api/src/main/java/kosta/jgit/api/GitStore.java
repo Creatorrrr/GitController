@@ -21,13 +21,10 @@ public interface GitStore {
 	public void addBranch(String branch);
 	
 	// Go to specific branch
-	public boolean goToBranch(String branch);
+	public void goToBranch(String branch);
 	
 	// Merge status
-	public boolean mergeBranch(String from, String to);
-	
-	// Add specified file to '.gitignore' list
-	public boolean addIgnore(String fileDir);
+	public void mergeBranch(String from, String to);
 	
 	// Get difference of changed file
 	public String getDiff(String file);

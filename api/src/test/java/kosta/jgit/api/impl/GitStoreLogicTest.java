@@ -41,31 +41,29 @@ public class GitStoreLogicTest {
 //		gitCtrl.commitFile("test message");
 //	}
 //
-	@Test
-	public void testAddBranch() {
-		gitCtrl.initGit("GitTest");
-		gitCtrl.addBranch("testbranch");
-	}
+//	@Test
+//	public void testAddBranch() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.addBranch("testbranch");
+//	}
 //
 //	@Test
 //	public void testGoToBranch() {
-//		fail("Not yet implemented");
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.goToBranch("testbranch");
 //	}
 //
 //	@Test
 //	public void testMergeBranch() {
-//		fail("Not yet implemented");
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.mergeBranch("master", "testbranch");
 //	}
 //
-//	@Test
-//	public void testAddIgnore() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetDiff() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testGetDiff() {
+		gitCtrl.initGit("GitTest");
+		gitCtrl.getDiff("asdf.txt");
+	}
 //
 //	@Test
 //	public void testGetLog() {
