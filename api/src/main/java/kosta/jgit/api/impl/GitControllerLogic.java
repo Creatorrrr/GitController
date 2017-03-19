@@ -432,8 +432,10 @@ public class GitControllerLogic implements GitController
 			}
 		} catch (IncorrectObjectTypeException e) {
 			e.printStackTrace();
+			throw new RuntimeException();
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new RuntimeException();
 		} finally {
 			AutoCloser.closeResource(git);
 		}
@@ -448,8 +450,10 @@ public class GitControllerLogic implements GitController
 			logs = git.log().addPath(file).call();
 		} catch (NoHeadException e) {
 			e.printStackTrace();
+			throw new RuntimeException();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
+			throw new RuntimeException();
 		} finally {
 			AutoCloser.closeResource(git);
 		}

@@ -70,10 +70,10 @@ public class GitControllerLogicTest {
 //		gitCtrl.getPreviousFile("asdf.txt", 0);
 //	}
 //
-	@Test
-	public void testGetLog() {
-		gitCtrl.initGit("GitTest");
-		gitCtrl.getLog("asdf.txt");
-	}
+//	@Test
+//	public void testGetLog() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.getLog("asdf.txt");
+//	}
 
 }
