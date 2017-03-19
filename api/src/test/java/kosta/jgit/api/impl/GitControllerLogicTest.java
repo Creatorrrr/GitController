@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GitStoreLogicTest {
-	private GitStoreLogic gitCtrl;
+public class GitControllerLogicTest {
+	private GitControllerLogic gitCtrl;
 	
 	@Before
 	public void setGit() {
-		gitCtrl = new GitStoreLogic("C:/Users/Creator");
+		gitCtrl = new GitControllerLogic("C:/Users/Creator");
 	}
 	
 //	@Test
@@ -59,15 +59,21 @@ public class GitStoreLogicTest {
 //		gitCtrl.mergeBranch("master", "testbranch");
 //	}
 //
-	@Test
-	public void testGetDiff() {
-		gitCtrl.initGit("GitTest");
-		gitCtrl.getDiff("asdf.txt");
-	}
-//
 //	@Test
-//	public void testGetLog() {
-//		fail("Not yet implemented");
+//	public void testGetDiff() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.getDiff("asdf.txt", 3);
 //	}
+//	@Test
+//	public void testGetPreviousFile() {
+//		gitCtrl.initGit("GitTest");
+//		gitCtrl.getPreviousFile("asdf.txt", 0);
+//	}
+//
+	@Test
+	public void testGetLog() {
+		gitCtrl.initGit("GitTest");
+		gitCtrl.getLog("asdf.txt");
+	}
 
 }

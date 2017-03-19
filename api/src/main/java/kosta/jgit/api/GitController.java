@@ -1,6 +1,6 @@
 package kosta.jgit.api;
 
-public interface GitStore {
+public interface GitController {
 	
 	// Initialize git to targeted directory
 	public void initGit(String dir);
@@ -27,9 +27,12 @@ public interface GitStore {
 	public void mergeBranch(String from, String to);
 	
 	// Get difference of changed file
-	public String getDiff(String file);
+	public String getDiff(String file, int rollbackCount);
+	
+	// Get previous version of file
+	public String getPreviousFile(String file, int rollbackCount);
 	
 	// Get log
-	public String getLog();
+	public String getLog(String file);
 	
 }

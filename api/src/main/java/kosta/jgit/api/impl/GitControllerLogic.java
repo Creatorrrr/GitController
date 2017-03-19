@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -21,6 +22,7 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -32,10 +34,10 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import kosta.jgit.api.GitStore;
+import kosta.jgit.api.GitController;
 import kosta.jgit.utils.AutoCloser;
 
-public class GitStoreLogic implements GitStore
+public class GitControllerLogic implements GitController
 {
 	/** rootPath is root of this service */
 	private String rootPath;
@@ -44,14 +46,14 @@ public class GitStoreLogic implements GitStore
 	
 	private Git git;
 
-	public GitStoreLogic() {
+	public GitControllerLogic() {
 		this.rootPath = "/";
 		this.git = null;
 		
 		System.out.println("RootPath : " + this.rootPath);
 	}
 	
-	public GitStoreLogic(String rootPath) {
+	public GitControllerLogic(String rootPath) {
 		StringBuilder strBuilder = new StringBuilder();
 		
 		strBuilder.append(rootPath);
@@ -291,21 +293,29 @@ public class GitStoreLogic implements GitStore
 		}
 	}
 
-	public String getDiff(String file) {
+	public String getDiff(String file, int rollbackCount) {
 		Repository repo = git.getRepository();
 		
 		ObjectId oldHead = null;
 		ObjectId newHead = null;
 		
+		StringBuilder strBuilder = new StringBuilder();
+		
+		strBuilder.append("HEAD^");
+		for(int i = 0 ; i < rollbackCount ; i++) {
+			strBuilder.append("^");
+		}
+		strBuilder.append("{tree}");
+		
 		try {
-			oldHead = repo.resolve("HEAD^^^^{tree}");
-	        newHead = repo.resolve("HEAD^^{tree}");
+			oldHead = repo.resolve(strBuilder.toString());
+	        newHead = repo.resolve("HEAD^{tree}");
 	        
 	        System.out.println("Printing diff between tree: " + oldHead.getName() + " and " + newHead.getName());
 	        
 	        AbstractTreeIterator oldTree = prepareTreeParser(repo, oldHead);
 	        AbstractTreeIterator newTree = prepareTreeParser(repo, newHead);
-		
+	        
 			List<DiffEntry> diff = git.diff().setOldTree(oldTree).setNewTree(newTree).setPathFilter(PathFilter.create(file)).call();
 
 			for(DiffEntry entry : diff) {
@@ -344,14 +354,11 @@ public class GitStoreLogic implements GitStore
 	
 	private AbstractTreeIterator prepareTreeParser(Repository repo, ObjectId objectId) {
         RevWalk walk = new RevWalk(repo);
-        RevCommit commit = null;
         RevTree tree = null;
         ObjectReader objectReader = repo.newObjectReader();
         CanonicalTreeParser treeParser = new CanonicalTreeParser();
         
 		try {
-//			commit = walk.parseCommit(objectId);
-//			tree = walk.parseTree(commit.getTree().getId());
 			tree = walk.parseTree(objectId);
 			
 			treeParser.reset(objectReader, tree.getId());
@@ -372,8 +379,85 @@ public class GitStoreLogic implements GitStore
         
         return treeParser;
 	}
+	
+	public String getPreviousFile(String file, int rollbackCount) {
+		Repository repo = git.getRepository();
+		
+		ObjectId head = null;
+		ObjectId fileId = null;
+		ObjectReader reader = null;
+		ObjectLoader oLoader = null;
+		
+		StringBuilder strBuilder = new StringBuilder();
+		
+		strBuilder.append("HEAD^");
+		for(int i = 0 ; i < rollbackCount ; i++) {
+			strBuilder.append("^");
+		}
+		strBuilder.append("{tree}");
+		
+		try {
+			head = repo.resolve(strBuilder.toString());
+	        
+	        // now we have the object id of the file in the commit:
+	        // open and read it from the reader
+	        fileId = getFileIdFromTreeId(repo, head, file);
+	        reader = repo.newObjectReader();
+	        oLoader = reader.open(fileId);
+	        oLoader.copyTo(System.out);
+		} catch (MissingObjectException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} finally {
+			AutoCloser.closeResource(git);
+		}
+		
+		return null;
+	}
+	
+	private ObjectId getFileIdFromTreeId(Repository repo, ObjectId treeId, String fileName) {
+		ObjectReader reader = repo.newObjectReader();
+		CanonicalTreeParser treeParser = null;
+		ObjectId fileId = null;
+		
+		try {
+			treeParser = new CanonicalTreeParser(null, reader, treeId);
+			if(treeParser.findFile(fileName)) {
+				fileId = treeParser.getEntryObjectId();
+			} else {
+				return null;
+			}
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			AutoCloser.closeResource(git);
+		}
+		
+		return fileId;
+	}
 
-	public String getLog() {
+	public String getLog(String file) {
+		Iterable<RevCommit> logs = null;
+		
+		try {
+			logs = git.log().addPath(file).call();
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		} finally {
+			AutoCloser.closeResource(git);
+		}
+		
+		for (RevCommit rev : logs) {
+            System.out.println("Commit Message : " + rev.getFullMessage() + "Author Name : " + rev.getAuthorIdent().getName() + " Commit time : " + rev.getAuthorIdent().getWhen());
+        }
+		
 		return null;
 	}
 	
