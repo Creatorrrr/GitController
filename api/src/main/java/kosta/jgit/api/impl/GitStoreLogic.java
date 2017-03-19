@@ -2,13 +2,20 @@ package kosta.jgit.api.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.dircache.DirCache;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.URIish;
+import org.slf4j.spi.LoggerFactoryBinder;
 
 import kosta.jgit.api.GitStore;
 import kosta.jgit.utils.AutoCloser;
@@ -107,10 +114,6 @@ public class GitStoreLogic implements GitStore
 		}
 	}
 
-	public boolean setRemoteRepository(String uri) {
-		return false;
-	}
-
 	public void addFile(String file) {
 		DirCache index = null;
 		
@@ -152,8 +155,38 @@ public class GitStoreLogic implements GitStore
 		System.out.println("RevCommit message : " + rev.getFullMessage());
 	}
 
-	public boolean addBranch(String branch) {
-		return false;
+	public void addBranch(String branch) {
+		Ref ref = null;
+		
+		try {
+			ref = git.branchCreate().setName(branch).call();
+		} catch (RefAlreadyExistsException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} catch (RefNotFoundException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} catch (InvalidRefNameException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+		System.out.println("Created branch : " + ref.getName() + "\n");
+		
+		try {
+			List<Ref> refList = git.branchList().call();
+			
+			System.out.println("Branch list\n");
+			
+			for(Ref r : refList) {
+				System.out.println(r.getName());
+			}
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean goToBranch(String branch) {

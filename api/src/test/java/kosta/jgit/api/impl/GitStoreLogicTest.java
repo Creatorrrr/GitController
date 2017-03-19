@@ -30,11 +30,6 @@ public class GitStoreLogicTest {
 //	}
 //
 //	@Test
-//	public void testSetRemoteRepository() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
 //	public void testAddFile() {
 //		gitCtrl.initGit("GitTest");
 //		gitCtrl.addFile("asdf.txt");
@@ -46,10 +41,11 @@ public class GitStoreLogicTest {
 //		gitCtrl.commitFile("test message");
 //	}
 //
-//	@Test
-//	public void testAddBranch() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testAddBranch() {
+		gitCtrl.initGit("GitTest");
+		gitCtrl.addBranch("testbranch");
+	}
 //
 //	@Test
 //	public void testGoToBranch() {

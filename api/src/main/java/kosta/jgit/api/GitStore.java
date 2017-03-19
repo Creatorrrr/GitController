@@ -10,9 +10,6 @@ public interface GitStore {
 	
 	// Clone existing repository
 	public void cloneRepository(String uri, String dir);
-
-	// Set remote repository
-	public boolean setRemoteRepository(String uri);
 	
 	// Stage file for commit it to Repository
 	public void addFile(String file);
@@ -21,7 +18,7 @@ public interface GitStore {
 	public void commitFile(String message);
 	
 	// Add branch
-	public boolean addBranch(String branch);
+	public void addBranch(String branch);
 	
 	// Go to specific branch
 	public boolean goToBranch(String branch);
